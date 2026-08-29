@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>[Dev Tool] Float Menu Performance Monitor</name>
+  <author>Vorsel</author>
+  <packageId>vorsel.floatmenuperformancemonitor</packageId>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>Dubwise.DubsPerformanceAnalyzer.steam</li>
+  </loadAfter>
+  <description><![CDATA[【中文说明】
+
+用于定位 RimWorld 1.6 地图右键菜单的性能热点。本工具既可独立运行并将低频采样结果写入 Player.log，也可在检测到 Dubs Performance Analyzer（DPA）时，向 DPA 的 Modder 分析页注册更直观的计时项目。DPA 并非必需依赖；未安装或接口不兼容时仍可使用日志功能。
+
+【主要功能】
+
+• 统计右键菜单 GUI 的调用次数、总耗时和平均耗时。
+• 统计各 FloatMenuOptionProvider.GetOptionsFor 的实际执行耗时，包括使用 yield 返回选项的迭代器。
+• 统计右键菜单触发的 WorkGiver JobOnThing / JobOnCell 检查，并记录调用次数、耗时、推测所属 Mod 和检查目标。
+• 在 Player.log 中输出 [FMPM-SAMPLE] 采样、[FMPM-SUMMARY] 汇总和 [FMPM-ERROR] 错误。
+• 检测到 DPA 时提供 Float Menu Overview、Float Menu Providers 和 Float Menu WorkGivers 三组分析项，使用 DPA 自带界面开始、停止、重置和查看数据。
+
+【使用方法】
+
+1. 启用本 Mod 后完整重启游戏。
+2. 载入测试存档，让游戏取消暂停并正常运行一段时间。部分昂贵检查只有在游戏经过若干 Tick、工作状态或目标状态发生变化后才会出现。
+3. 选中测试小人，右键目标并保持菜单开启数秒；重复容易触发卡顿的实际场景。
+4. 未安装 DPA 时，在 Player.log 搜索 [FMPM-SAMPLE]、[FMPM-SUMMARY] 或 [FMPM-ERROR]。
+5. 安装 DPA 时，在 DPA 的 Modder 分析页查看 Float Menu Overview、Float Menu Providers 和 Float Menu WorkGivers。
+
+Player.log 通常位于：
+%USERPROFILE%\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Player.log
+
+【如何阅读日志】
+
+[FMPM-SAMPLE]：一次菜单采样。totalMs 为采样窗口内的菜单总耗时；providerTop 为最慢选项提供器；workGiverTop 为最慢工作检查。每项会列出 calls、ms、推测所属 Mod 和检查目标。
+[FMPM-SUMMARY]：菜单 GUI 的累计调用次数、总耗时和平均耗时。
+[FMPM-ERROR]：监控器自身错误。
+菜单关闭期间没有 Provider 或 WorkGiver 数据通常是正常现象。
+
+【与 Float Menu Performance Optimizer 配合】
+
+定位原始性能热点时，建议暂时把通用优化模式设为“关闭”，并关闭对应目标 Mod 的内置修复，否则刷新频率或被跳过的代码路径会改变监控结果。完成诊断后再恢复优化设置。
+
+【排序与注意事项】
+
+必须位于 Harmony 后面。About.xml 已声明在 DPA 后加载；手动排序时建议同时放在需要监控的 Mod 后面，通常接近列表末尾。
+
+这是诊断工具，不会向存档写入额外状态，但计时与日志本身会产生一定开销。请关闭本工具后再进行最终 FPS 对比。Mod 归属来自程序集和类型信息推测，复杂 Harmony 补丁或自定义 GUI 不一定能被完整、准确归因。
+
+【English Description】
+
+A diagnostic tool for locating RimWorld 1.6 map float-menu performance hotspots. It can run on its own and write low-frequency samples to Player.log. When Dubs Performance Analyzer (DPA) is detected, it also registers dedicated timing entries in DPA's Modder profiling interface. DPA is optional; log-based monitoring remains available when DPA is absent or incompatible.
+
+【Features】
+
+• Tracks float-menu GUI call count, total time, and average time.
+• Measures the actual execution of FloatMenuOptionProvider.GetOptionsFor, including yield-based iterator providers.
+• Measures WorkGiver JobOnThing / JobOnCell checks triggered by float-menu generation, with calls, time, probable owning mod, and checked targets.
+• Writes [FMPM-SAMPLE], [FMPM-SUMMARY], and [FMPM-ERROR] records to Player.log.
+• Adds Float Menu Overview, Float Menu Providers, and Float Menu WorkGivers entries to DPA when available. Use DPA's own interface to start, stop, reset, and inspect profiling data.
+
+【How to use】
+
+1. Enable the mod and fully restart RimWorld.
+2. Load the test save, unpause, and let the game run for a while. Some expensive paths appear only after game ticks advance or pawn/job/target state changes.
+3. Select the test pawn, right-click the relevant target, and keep the menu open for several seconds. Reproduce the real scenario that causes the slowdown.
+4. Without DPA, search Player.log for [FMPM-SAMPLE], [FMPM-SUMMARY], or [FMPM-ERROR].
+5. With DPA, open its Modder profiling page and use Float Menu Overview, Float Menu Providers, and Float Menu WorkGivers.
+
+Typical Player.log location:
+%USERPROFILE%\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Player.log
+
+【Reading the log】
+
+[FMPM-SAMPLE]: one sampling window. totalMs is total menu time; providerTop lists the slowest option providers; workGiverTop lists the slowest work checks. Entries include calls, time, probable owning mod, and checked targets.
+[FMPM-SUMMARY]: cumulative GUI calls, total time, and average time.
+[FMPM-ERROR]: monitor errors.
+No provider or WorkGiver data while the menu is closed is normally expected.
+
+【Using it with Float Menu Performance Optimizer】
+
+To profile the original expensive paths, temporarily set the general optimization mode to Disabled and turn off the relevant integrated targeted fixes. Otherwise, changed refresh frequency or skipped paths will affect the measurements. Restore the optimizer settings after diagnosis.
+
+【Load order and notes】
+
+Load after Harmony. About.xml declares loading after DPA; when sorting manually, also place it after the mods being monitored, usually near the end of the list.
+
+This diagnostic tool does not store extra state in saves, but timing and logging add some overhead. Disable it before final FPS comparisons. Mod ownership is inferred from assemblies and types, so complex Harmony patches and custom GUI code cannot always be attributed completely or with certainty.]]></description>
+</ModMetaData>
