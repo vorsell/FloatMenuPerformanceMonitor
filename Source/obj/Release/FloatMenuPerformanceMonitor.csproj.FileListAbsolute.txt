@@ -1,0 +1,4 @@
+G:\SteamLibrary\steamapps\common\RimWorld\Mods\FloatMenuPerformanceMonitor\Assemblies\FloatMenuPerformanceMonitor.dll
+G:\SteamLibrary\steamapps\common\RimWorld\Mods\FloatMenuPerformanceMonitor\Source\obj\Release\FloatMenuPerformanceMonitor.csproj.AssemblyReference.cache
+G:\SteamLibrary\steamapps\common\RimWorld\Mods\FloatMenuPerformanceMonitor\Source\obj\Release\FloatMenuPerformanceMonitor.csproj.CoreCompileInputs.cache
+G:\SteamLibrary\steamapps\common\RimWorld\Mods\FloatMenuPerformanceMonitor\Source\obj\Release\FloatMenuPerformanceMonitor.dll
