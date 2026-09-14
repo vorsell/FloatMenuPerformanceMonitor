@@ -132,6 +132,21 @@ namespace FloatMenuPerformanceMonitor
                 + " workGiverTop=" + workGivers);
         }
 
+        internal static void AbortOptionsSample(long startedAt)
+        {
+            // A nested window that did not start this sample must not abort the
+            // outer window's active sample.
+            if (startedAt == 0 || !sampling)
+            {
+                return;
+            }
+
+            sampling = false;
+            ProviderEntries.Clear();
+            WorkGiverEntries.Clear();
+            sampledPawn = "none";
+        }
+
         internal static long BeginNestedTiming()
         {
             return sampling ? Stopwatch.GetTimestamp() : 0;
@@ -343,6 +358,21 @@ namespace FloatMenuPerformanceMonitor
         {
             FloatMenuMonitorState.EndOptionsSample(__state.SampleStartedAt);
             FloatMenuMonitorState.EndWindow(__state.WindowStartedAt);
+        }
+
+        private static Exception Finalizer(
+            Exception __exception,
+            FloatMenuWindowTimingState __state)
+        {
+            if (__exception != null)
+            {
+                FloatMenuMonitorState.AbortOptionsSample(
+                    __state.SampleStartedAt);
+            }
+
+            // Preserve the original exception; this monitor only cleans up its
+            // own sampling state and must not hide failures from other code.
+            return __exception;
         }
     }
 
