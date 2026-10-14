@@ -244,14 +244,91 @@ namespace FloatMenuPerformanceMonitor
     public static class DpaFloatMenuOverviewEntry
     {
         public static bool Active;
+        private static bool warnedTargets;
 
         public static IEnumerable<MethodInfo> GetPatchMethods()
         {
-            HashSet<MethodInfo> methods = new HashSet<MethodInfo>();
-            DpaFloatMenuMethodDiscovery.AddNamedMethods(methods, typeof(FloatMenuMap), "DoWindowContents");
-            DpaFloatMenuMethodDiscovery.AddNamedMethods(methods, typeof(FloatMenuMakerMap), "GetOptions");
-            DpaFloatMenuMethodDiscovery.AddNamedMethods(methods, typeof(FloatMenuMakerMap), "GetProviderOptions");
-            return methods;
+            return DpaFloatMenuMethodDiscovery.ValidMethods(
+                FindTarget(
+                    typeof(FloatMenuMap), "DoWindowContents", false, typeof(void),
+                    typeof(UnityEngine.Rect)),
+                FindTarget(
+                    typeof(FloatMenuMakerMap), "GetOptions", true,
+                    typeof(List<FloatMenuOption>), typeof(List<Pawn>),
+                    typeof(UnityEngine.Vector3), typeof(FloatMenuContext).MakeByRefType()),
+                FindTarget(
+                    typeof(FloatMenuMakerMap), "GetProviderOptions", true, typeof(void),
+                    typeof(FloatMenuContext), typeof(List<FloatMenuOption>)));
+        }
+
+        // DPA's entry contract loads IL argument zero for __instance, including
+        // on static methods. These three validated targets receive respectively
+        // the menu instance, selected-pawn list, and menu context. A parameterized
+        // callback keeps DPA off its pinned-profiler fast path, which is invalid
+        // for reference-containing Profiler objects on the 1.7 runtime.
+        public static string GetName(object __instance)
+        {
+            if (__instance is FloatMenuMap)
+            {
+                return "FMPM.Overview.FloatMenuMap.DoWindowContents";
+            }
+
+            if (__instance is List<Pawn>)
+            {
+                return "FMPM.Overview.FloatMenuMakerMap.GetOptions";
+            }
+
+            if (__instance is FloatMenuContext)
+            {
+                return "FMPM.Overview.FloatMenuMakerMap.GetProviderOptions";
+            }
+
+            return null;
+        }
+
+        public static string GetLabel(object __instance)
+        {
+            if (__instance is FloatMenuMap)
+            {
+                return "FloatMenuMap.DoWindowContents";
+            }
+
+            if (__instance is List<Pawn>)
+            {
+                return "FloatMenuMakerMap.GetOptions";
+            }
+
+            if (__instance is FloatMenuContext)
+            {
+                return "FloatMenuMakerMap.GetProviderOptions";
+            }
+
+            return null;
+        }
+
+        private static MethodInfo FindTarget(
+            Type type, string name, bool isStatic, Type returnType,
+            params Type[] parameterTypes)
+        {
+            MethodInfo method = AccessTools.Method(type, name, parameterTypes);
+            if (DpaFloatMenuMethodDiscovery.HasMethodBody(method)
+                && method.DeclaringType == type
+                && method.IsStatic == isStatic
+                && method.ReturnType == returnType
+                && DpaFloatMenuMethodDiscovery.IteratorMoveNext(method) == null)
+            {
+                return method;
+            }
+
+            if (!warnedTargets)
+            {
+                warnedTargets = true;
+                Log.Warning("[FMPM-DPA] An Overview target signature was not recognized ("
+                    + type.FullName + "." + name + "). The unsupported target was skipped; "
+                    + "Player.log monitoring remains active.");
+            }
+
+            return null;
         }
     }
 

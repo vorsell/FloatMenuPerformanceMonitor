@@ -5,6 +5,7 @@
   <packageId>vorsel.floatmenuperformancemonitor</packageId>
   <supportedVersions>
     <li>1.6</li>
+    <li>1.7</li>
   </supportedVersions>
   <modDependencies>
     <li>
@@ -19,7 +20,7 @@
   </loadAfter>
   <description><![CDATA[【中文说明】
 
-用于定位 RimWorld 1.6 地图右键菜单的性能热点。本工具既可独立运行并将低频采样结果写入 Player.log，也可在检测到 Dubs Performance Analyzer（DPA）时，向 DPA 的 Modder 分析页注册更直观的计时项目。DPA 并非必需依赖；未安装或接口不兼容时仍可使用日志功能。
+用于定位 RimWorld 1.6 / 1.7 地图右键菜单的性能热点。本工具既可独立运行并将低频采样结果写入 Player.log，也可在检测到 Dubs Performance Analyzer（DPA）时，向 DPA 的 Modder 分析页注册更直观的计时项目。DPA 并非必需依赖；未安装或接口不兼容时仍可使用日志功能。
 
 【主要功能】
 
@@ -40,6 +41,8 @@
 Player.log 通常位于：
 %USERPROFILE%\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Player.log
 
+RimWorld 1.7 使用该目录下的 Logs\Player.log。
+
 【如何阅读日志】
 
 [FMPM-SAMPLE]：一次菜单采样。totalMs 为采样窗口内的菜单总耗时；providerTop 为最慢选项提供器；workGiverTop 为最慢工作检查。每项会列出 calls、ms、推测所属 Mod 和检查目标。
@@ -59,7 +62,7 @@ Player.log 通常位于：
 
 【English Description】
 
-A diagnostic tool for locating RimWorld 1.6 map float-menu performance hotspots. It can run on its own and write low-frequency samples to Player.log. When Dubs Performance Analyzer (DPA) is detected, it also registers dedicated timing entries in DPA's Modder profiling interface. DPA is optional; log-based monitoring remains available when DPA is absent or incompatible.
+A diagnostic tool for locating RimWorld 1.6 / 1.7 map float-menu performance hotspots. It can run on its own and write low-frequency samples to Player.log. When Dubs Performance Analyzer (DPA) is detected, it also registers dedicated timing entries in DPA's Modder profiling interface. DPA is optional; log-based monitoring remains available when DPA is absent or incompatible.
 
 【Features】
 
@@ -79,6 +82,8 @@ A diagnostic tool for locating RimWorld 1.6 map float-menu performance hotspots.
 
 Typical Player.log location:
 %USERPROFILE%\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Player.log
+
+RimWorld 1.7 writes to Logs\Player.log under the same directory.
 
 【Reading the log】
 
